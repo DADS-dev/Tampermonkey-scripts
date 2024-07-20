@@ -1,0 +1,68 @@
+// ==UserScript==
+// @name         letterboxd-hide-ratings
+// @namespace    http://tampermonkey.net/
+// @version      2024-07-20
+// @description  try to take over the world!
+// @author       You
+// @match        https://letterboxd.com/film*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=mozilla.org
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // Create a MutationObserver to watch for changes in the DOM
+    const observer = new MutationObserver((mutationsList, observer) => {
+        for (const mutation of mutationsList) {
+            if (mutation.type === 'childList') {
+                const targetDiv = document.querySelector('div.details');
+                if (targetDiv) {
+                    // Change the content of the div
+                    const originalContent = targetDiv.innerHTML;
+
+                    // Create a button
+                    const button = document.createElement('button');
+                    button.innerText = 'Hide rating';
+                    button.style.padding = '10px';
+                    button.style.fontSize = '16px';
+                    button.style.background = '#456';
+                    button.style.color = "#bcd";
+                    button.style.marginLeft = "10px";
+                    button.style.border = "0";
+                    button.style.borderRadius = "2px";
+
+                    // Add event listener to restore the original content on button click
+                    button.addEventListener('click', () => {
+                        // Add click animation
+                        button.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            button.style.transform = 'scale(1)';
+                        }, 100);
+
+                        const targetDiv2 = document.querySelector('div.rating-histogram');
+                        if (targetDiv2) {
+                            // Replace the content of the div
+                            targetDiv2.innerHTML = 'Ratings hide';
+                        }
+                        const targetDiv3 = document.querySelector('span.average-rating');
+                        if (targetDiv3) {
+                            // Replace the content of the div
+                            targetDiv3.innerHTML = '';
+                        }
+                    });
+
+                    // Clear the div content and append the button
+                    targetDiv.appendChild(button);
+
+                    // Stop observing once the target div is found and modified
+                    observer.disconnect();
+                    break;
+                }
+            }
+        }
+    });
+
+    // Start observing the document body for added nodes
+    observer.observe(document.body, { childList: true, subtree: true });
+})();
